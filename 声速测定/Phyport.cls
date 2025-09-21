@@ -8,7 +8,7 @@
 \RequirePackage{silence}
 \WarningFilter{latexfont}{Some font shapes}
 \WarningFilter{latexfont}{Font shape}
-\RequirePackage{float, siunitx}
+
 % 设置版式
 \linespread{1.2}
 \geometry{top=1in,bottom=1in,left=1.91cm,right=1.91cm}
@@ -27,8 +27,8 @@
 
 \setcounter{secnumdepth}{3}
 \renewcommand\thesection{\zhnumber{\arabic{section}}、\hspace{-5.53mm}}
-\renewcommand\thesubsection{\arabic{subsection}、\hspace{-2.415mm}}
-\renewcommand\thesubsubsection{\arabic{subsubsection}.\hspace{-2.415mm}}
+\renewcommand\thesubsection{\arabic{subsection}.\hspace{-2.415mm}}
+\renewcommand\thesubsubsection{(\arabic{subsubsection})}
 \setlist[enumerate,1]{label=(\arabic*)}
 \setlist[enumerate,2]{label=\alph*.}
 \titleformat*{\section}{\Large\bfseries}
@@ -81,7 +81,7 @@
 %\newcommand\partner[1]{\def\@partner{#1}}
 \graphicspath{{figures/}}
 
-\pagestyle{plain}
+\pagestyle{plain} 
 %\lhead{实验名称：\@expname}
 %\chead{姓名：\@name}
 %\rhead{学号：\@stuid}
@@ -108,7 +108,7 @@
     \begin{tabular}{l@{}l}
       \fbsong{实验名称：} & \underlinetext[69.125mm]{\@exname} \\
       \fbsong{实验桌号：} & \underlinetext[69.125mm]{\@extable} \\
-      \fbsong{指导教师：} & \underlinetext[69.125mm]{\@instructor}
+      \fbsong{指导教师：} & \underlinetext[69.125mm]{\@instructor} 
     \end{tabular}
 
     \vspace{18.45mm}
@@ -118,7 +118,7 @@
     \begin{tabular}{l@{}l}
       \fbsong{班级：} & \underlinetext[79.695mm]{\@class}  \\
       \fbsong{姓名：} & \underlinetext[79.695mm]{\@name}   \\
-      \fbsong{学号：} & \underlinetext[79.695mm]{\@stuid}
+      \fbsong{学号：} & \underlinetext[79.695mm]{\@stuid}  
     \end{tabular}
 
     \vspace{4.83mm}
