@@ -27,6 +27,10 @@
 
 ## 资源整理
 
+[Typst模板](https://www.cc98.org/topic/6286687)
+
+[LaTeX模板](https://www.cc98.org/topic/6284556)
+
 [cc98其一：大学物理实验报告（大物实验报告）](https://www.cc98.org/topic/6076104)
 
 [咸鱼暄](https://xuan-insr.github.io/other_courses/big_physics_exp/)
