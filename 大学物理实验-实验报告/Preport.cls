@@ -9,6 +9,7 @@
 \WarningFilter{latexfont}{Some font shapes}
 \WarningFilter{latexfont}{Font shape}
 \RequirePackage{float, siunitx}
+\RequirePackage{booktabs}
 % 设置版式
 \linespread{1.2}
 \geometry{top=1in,bottom=1in,left=1.91cm,right=1.91cm}
@@ -133,3 +134,21 @@
   \newpage
 }
 \endinput
+
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
+\newcolumntype{C}[1]{>{\centering\arraybackslash}p{#1}}
+\newcolumntype{R}[1]{>{\raggedleft\arraybackslash}p{#1}}
+% 三线表使用方法
+% \begin{table}[H]
+%   \centering
+%   \caption{}
+%   \begin{tabular}{C{.3\textwidth}C{.3\textwidth}C{.3\textwidth}}
+%   \toprule
+%   读取值  & 测量值  & 计算误差 \\
+%   \midrule
+%   10000$\Omega$  & 10001$\Omega$  & 0.01\%  \\
+%   100$\Omega$    & 100.4$\Omega$  & 0.40\%  \\
+%   100k$\Omega$ & 100.25k$\Omega$ & 0.25\%  \\
+%   \bottomrule
+%   \end{tabular}
+% \end{table}
