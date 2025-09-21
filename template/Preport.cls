@@ -1,4 +1,4 @@
-\ProvidesClass{Phyport}
+\ProvidesClass{Preport}
 \LoadClass{ctexart}
 \RequirePackage{graphicx, xcolor, tikz}
 \RequirePackage{geometry, titlesec, fancyhdr}
@@ -8,7 +8,13 @@
 \RequirePackage{silence}
 \WarningFilter{latexfont}{Some font shapes}
 \WarningFilter{latexfont}{Font shape}
+\RequirePackage{float, siunitx}
+\RequirePackage{booktabs, tabularx, array}
 
+
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
+\newcolumntype{C}[1]{>{\centering\arraybackslash}p{#1}}
+\newcolumntype{R}[1]{>{\raggedleft\arraybackslash}p{#1}}
 % 设置版式
 \linespread{1.2}
 \geometry{top=1in,bottom=1in,left=1.91cm,right=1.91cm}
@@ -27,8 +33,8 @@
 
 \setcounter{secnumdepth}{3}
 \renewcommand\thesection{\zhnumber{\arabic{section}}、\hspace{-5.53mm}}
-\renewcommand\thesubsection{\arabic{subsection}.\hspace{-2.415mm}}
-\renewcommand\thesubsubsection{(\arabic{subsubsection})}
+\renewcommand\thesubsection{\arabic{subsection}、\hspace{-2.415mm}}
+\renewcommand\thesubsubsection{\arabic{subsubsection}.\hspace{-2.415mm}}
 \setlist[enumerate,1]{label=(\arabic*)}
 \setlist[enumerate,2]{label=\alph*.}
 \titleformat*{\section}{\Large\bfseries}
@@ -57,7 +63,7 @@
 %\newcommand\major[1]{\def\@major{#1}}
 %\newcommand\course[1]{\def\@course{#1}}
 \newcommand\exname[1]{\def\@exname{#1}}
-\newcommand\extable[1]{\def\@extable{#1}}
+%\newcommand\extable[1]{\def\@extable{#1}}
 \newcommand\instructor[1]{\def\@instructor{#1}}
 
 \newcommand\class[1]{\def\@class{#1}}
@@ -81,7 +87,7 @@
 %\newcommand\partner[1]{\def\@partner{#1}}
 \graphicspath{{figures/}}
 
-\pagestyle{plain} 
+\pagestyle{plain}
 %\lhead{实验名称：\@expname}
 %\chead{姓名：\@name}
 %\rhead{学号：\@stuid}
@@ -93,50 +99,58 @@
 
 % 封面
 \newcommand{\makecover}{
-  \begin{center}
-    \begin{center}
-      \includegraphics[width=0.4\linewidth]{figures/浙江大学}
-    \end{center}
 
-    {\fontsize{36pt}{6pt}\selectfont \fbsong{物~理~实~验~报~告}}\\
-    \vspace{12.65mm}
-    \vspace{18.45mm}
+    \phantom{\fontsize{42pt}{50.4pt}\selectfont wcnm的LaTeX}
+
+    \begin{center}
+    {\fontsize{36pt}{6pt}\selectfont \fbsong{物理实验预习报告}}\\
+    \vspace{15.18mm}
+    \vspace{17.712mm}
 
     \Large
     \centering
     \renewcommand\arraystretch{2}
     \begin{tabular}{l@{}l}
       \fbsong{实验名称：} & \underlinetext[69.125mm]{\@exname} \\
-      \fbsong{实验桌号：} & \underlinetext[69.125mm]{\@extable} \\
-      \fbsong{指导教师：} & \underlinetext[69.125mm]{\@instructor} 
+      \fbsong{指导教师：} & \underlinetext[69.125mm]{\@instructor}
     \end{tabular}
 
-    \vspace{18.45mm}
+    \vspace{19.08mm}
     \large
     \centering
     \renewcommand\arraystretch{2}
     \begin{tabular}{l@{}l}
       \fbsong{班级：} & \underlinetext[79.695mm]{\@class}  \\
       \fbsong{姓名：} & \underlinetext[79.695mm]{\@name}   \\
-      \fbsong{学号：} & \underlinetext[79.695mm]{\@stuid}  
+      \fbsong{学号：} & \underlinetext[79.695mm]{\@stuid}
     \end{tabular}
 
-    \vspace{4.83mm}
+    \vspace{8.694mm}
 
     \begin{center}
-      \large{\fbsong{实验日期：}\underlinetext[9.66mm]{\@nyear}\fbsong{年}\underlinetext[9.66mm]{\@nmonth}\fbsong{月}\underlinetext[9.66mm]{\@nday}\fbsong{日}\hspace{7.245mm}\fbsong{星期}\underlinetext[7.245mm]{\@nweekday}\fbsong{上/下午}}\\
-    \textcolor[gray]{0.4}{\small{（此处填实验选课系统内日期）}}\\
+      \large{\fbsong{实验日期：}\underlinetext[9.66mm]{\@nyear}\fbsong{年}\underlinetext[9.66mm]{\@nmonth}\fbsong{月}\underlinetext[9.66mm]{\@nday}\fbsong{日}\hspace{7.245mm}\fbsong{星期}\underlinetext[7.245mm]{\@nweekday}\fbsong{上午}}
+
+      \vspace{8.694mm}
+
     \large{浙江大学物理实验教学中心}
     \end{center}
   \end{center}
-
-  \vspace{4.2175mm}
-
-  \begin{flushleft}
-    \textcolor[gray]{0.4}{\normalsize{\fbsong{如有实验补做，补做日期：}}}\@redate \\
-    \textcolor[gray]{0.4}{\normalsize{\fbsong{情况说明：}}}\@resitu
-  \end{flushleft}
   \thispagestyle{plain}
   \newpage
 }
 \endinput
+
+% 三线表使用方法
+% \begin{table}[H]
+%   \centering
+%   \caption{}
+%   \begin{tabular}{C{.3\textwidth}C{.3\textwidth}C{.3\textwidth}}
+%   \toprule
+%   读取值  & 测量值  & 计算误差 \\
+%   \midrule
+%   10000$\Omega$  & 10001$\Omega$  & 0.01\%  \\
+%   100$\Omega$    & 100.4$\Omega$  & 0.40\%  \\
+%   100k$\Omega$ & 100.25k$\Omega$ & 0.25\%  \\
+%   \bottomrule
+%   \end{tabular}
+% \end{table}
