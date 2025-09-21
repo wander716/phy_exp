@@ -1,5 +1,7 @@
 # 大物实验电子版
 
+## 模板说明
+
 模板参考了cc98（【学习天地】大二物理实验报告LaTeX模版 <https://www.cc98.org/topic/6284556> 复制本链接到浏览器或者打开【CC98】微信小程序查看~）的模板，进行了一些修改和功能性宏包的添加
 
 物理单位请使用siunit宏包，e.g.`$\si{\meter\per\second}$`，`$\si{\degreeCelsius}$`，
@@ -22,3 +24,9 @@
   \end{tabular}
 \end{table}
 ```
+
+## 资源整理
+
+[cc98其一：大学物理实验报告（大物实验报告）](https://www.cc98.org/topic/6076104)
+
+[咸鱼暄](https://xuan-insr.github.io/other_courses/big_physics_exp/)
