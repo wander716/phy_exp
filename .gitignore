@@ -1,0 +1,23 @@
+# -*- mode: gitignore; -*-
+
+## 1. 忽略所有编译产生的中间文件
+# 通常是 LaTeX 或其他编译工具生成的临时文件
+*.aux
+*.log
+*.toc
+*.lof
+*.lot
+*.out
+*.bbl
+*.blg
+*.synctex.gz
+*.fls
+*.fdb_latexmk
+_minted*
+
+## 2. 忽略所有编译出来的 PDF 文件
+*.pdf
+
+## 3. 但是不忽略 "浙江大学.pdf"
+# 注意：! 开头的例外规则必须放在忽略规则之后才能生效
+!浙江大学.pdf
