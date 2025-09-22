@@ -33,13 +33,13 @@
 
 \setcounter{secnumdepth}{3}
 \renewcommand\thesection{\zhnumber{\arabic{section}}、\hspace{-5.53mm}}
-\renewcommand\thesubsection{\arabic{subsection}、\hspace{-2.415mm}}
-\renewcommand\thesubsubsection{\arabic{subsubsection}.\hspace{-2.415mm}}
+\renewcommand\thesubsection{\arabic{subsection}\hspace{-2.415mm}}
+\renewcommand\thesubsubsection{\arabic{subsection}.\arabic{subsubsection}\hspace{-2.415mm}}
 \setlist[enumerate,1]{label=(\arabic*)}
 \setlist[enumerate,2]{label=\alph*.}
-\titleformat*{\section}{\Large\bfseries}
-\titleformat*{\subsection}{\large\fakeboldsong\bfseries}
-\titleformat*{\subsubsection}{\normalsize}
+\titleformat{\section}[hang]{\Large\fakeboldsong\bfseries}{\textrm{\thesection}}{1em}{}
+\titleformat{\subsection}[hang]{\large\fakeboldsong\bfseries}{\textrm{\thesubsection}}{1em}{}
+\titleformat{\subsubsection}[hang]{\normalsize\fakeboldsong\bfseries}{\textrm{\thesubsubsection}}{1em}{}
 
 % 代码格式和颜色定义
 \colorlet{keyword}{松花绿}
