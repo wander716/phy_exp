@@ -10,11 +10,22 @@
 \WarningFilter{latexfont}{Font shape}
 \RequirePackage{float, siunitx}
 \RequirePackage{booktabs, tabularx, array, subcaption, hyperref}
-\RequirePackage{currfile}
+\RequirePackage{currfile, cleveref}
 \hypersetup{
     colorlinks=true,
 }
 \RequirePackage{comment}
+
+\crefname{figure}{图}{图} % 单数、复数形式
+\crefname{table}{表}{表}
+\crefname{equation}{式}{式}
+
+% 更复杂的格式，例如想让引用显示为 “图 1-1”
+% #1 是标签名, #2 是数字, #3 是备注
+\crefformat{figure}{图~#2#1#3}
+\crefformat{table}{表~#2#1#3}
+\crefformat{equation}{式~(#2#1#3)}
+
 \newcommand{\@reporttitle}{}
 \newif\ifpreviewreport
 
@@ -201,18 +212,3 @@
   \newpage
 }
 \endinput
-
-% 三线表使用方法
-% \begin{table}[H]
-%   \centering
-%   \caption{}
-%   \begin{tabular}{C{.3\textwidth}C{.3\textwidth}C{.3\textwidth}}
-%   \toprule
-%   读取值  & 测量值  & 计算误差 \\
-%   \midrule
-%   10000$\Omega$  & 10001$\Omega$  & 0.01\%  \\
-%   100$\Omega$    & 100.4$\Omega$  & 0.40\%  \\
-%   100k$\Omega$ & 100.25k$\Omega$ & 0.25\%  \\
-%   \bottomrule
-%   \end{tabular}
-% \end{table}
