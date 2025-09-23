@@ -122,4 +122,6 @@
 \SI{10}{mA}
 \si{\meter\per\second}
 \si{\degreeCelsius}
+\SI{9.8}{\meter\per\second\squared}
+\SI{1.23e-4}{\pascal\second}
 ```
