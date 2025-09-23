@@ -152,6 +152,7 @@
   % 在插入文件前，先用 \IfFileExists 检查文件是否存在
   \IfFileExists{\templatedir note.tex}
   {% 如果文件存在 (TRUE block)
+    \par\vfill\noindent
     \input{\templatedir note} % 执行插入操作
   }
   {% 如果文件不存在 (FALSE block)
@@ -202,7 +203,7 @@
     \vspace{8.694mm}
 
     \begin{center}
-      \large{\fbsong{实验日期：}\underlinetext[9.66mm]{\@nyear}\fbsong{年}\underlinetext[9.66mm]{\@nmonth}\fbsong{月}\underlinetext[9.66mm]{\@nday}\fbsong{日}\hspace{7.245mm}\fbsong{星期}\underlinetext[7.245mm]{\@nweekday}\fbsong{上午}}
+      \large{\fbsong{实验日期：}\underlinetext[9.66mm]{\@nyear}\fbsong{年}\underlinetext[9.66mm]{\@nmonth}\fbsong{月}\underlinetext[9.66mm]{\@nday}\fbsong{日}\hspace{7.245mm}\fbsong{星期}\underlinetext[7.245mm]{\@nweekday}\fbsong{\@daypart}}
 
       \vspace{8.694mm}
 
@@ -246,7 +247,7 @@
     \vspace{4.83mm}
 
     \begin{center}
-      \large{\fbsong{实验日期：}\underlinetext[9.66mm]{\@nyear}\fbsong{年}\underlinetext[9.66mm]{\@nmonth}\fbsong{月}\underlinetext[9.66mm]{\@nday}\fbsong{日}\hspace{7.245mm}\fbsong{星期}\underlinetext[7.245mm]{\@nweekday}\fbsong{上/下午}}\\
+      \large{\fbsong{实验日期：}\underlinetext[9.66mm]{\@nyear}\fbsong{年}\underlinetext[9.66mm]{\@nmonth}\fbsong{月}\underlinetext[9.66mm]{\@nday}\fbsong{日}\hspace{7.245mm}\fbsong{星期}\underlinetext[7.245mm]{\@nweekday}\fbsong{\@daypart}}\\
     \textcolor[gray]{0.4}{\small{（此处填实验选课系统内日期）}}\\
     \large{浙江大学物理实验教学中心}
     \end{center}
