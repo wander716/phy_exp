@@ -9,8 +9,42 @@
 \WarningFilter{latexfont}{Some font shapes}
 \WarningFilter{latexfont}{Font shape}
 \RequirePackage{float, siunitx}
-\RequirePackage{booktabs, tabularx, array}
+\RequirePackage{booktabs, tabularx, array, subcaption, hyperref}
+\RequirePackage{currfile}
+\hypersetup{
+    colorlinks=true,
+}
+\RequirePackage{comment}
+\newcommand{\@reporttitle}{}
+\newif\ifpreviewreport
 
+% 声明选项 'yuxi'
+% 当在 \documentclass 中检测到 'yuxi' 时，执行以下所有操作
+\DeclareOption{yuxi}{
+  \renewcommand{\@reporttitle}{物理实验预习报告}
+  \excludecomment{fullreportonly}
+  \previewreporttrue
+}
+
+% 声明选项 'bg'
+% 当在 \documentclass 中检测到 'bg' 时，执行以下所有操作
+\DeclareOption{bg}{
+  \renewcommand{\@reporttitle}{物~理~实~验~报~告}
+  % \includecomment 是 comment 宏包的命令，确保环境生效
+  \includecomment{fullreportonly}
+  \previewreportfalse
+}
+
+% 3. ★★★ 设置默认值并执行选项 ★★★
+% 如果用户没有提供任何选项，则默认执行 'bg' 选项
+\ExecuteOptions{bg}
+
+% 现在，处理用户在 \documentclass[...]{...} 中实际传入的选项
+% 它会覆盖上面的默认设置
+\ProcessOptions\relax
+
+\newcommand{\templatedir}{./}
+\newcommand{\settemplatedir}[1]{\renewcommand{\templatedir}{#1}}
 
 \newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
 \newcolumntype{C}[1]{>{\centering\arraybackslash}p{#1}}
@@ -86,7 +120,21 @@
 %\newcommand\exptype[1]{\def\@exptype{#1}}
 %\newcommand\partner[1]{\def\@partner{#1}}
 \graphicspath{{figures/}}
-
+\newcommand{\insertnotes}{%
+  % 在插入文件前，先用 \IfFileExists 检查文件是否存在
+  \IfFileExists{\templatedir note.tex}
+  {% 如果文件存在 (TRUE block)
+    \input{\templatedir note} % 执行插入操作
+  }
+  {% 如果文件不存在 (FALSE block)
+    % 在编译日志(.log)和终端中打印一条明确的警告信息
+    \PackageWarning{myphydreport}{
+      Notes file not found! I was looking for it at the exact path: '\templatedir/note'
+    }
+  }%
+}
+\renewcommand{\figurename}{图}
+\renewcommand{\tablename}{表}
 \pagestyle{plain}
 %\lhead{实验名称：\@expname}
 %\chead{姓名：\@name}
@@ -103,7 +151,20 @@
     \phantom{\fontsize{42pt}{50.4pt}\selectfont wcnm的LaTeX}
 
     \begin{center}
-    {\fontsize{36pt}{6pt}\selectfont \fbsong{物理实验预习报告}}\\
+    %   \begin{fullreportonly}
+    %   \begin{center}
+    %   \includegraphics[width=0.4\linewidth]{figures/浙江大学}
+    %   \end{center}
+    % \end{fullreportonly}
+    \ifpreviewreport
+    \else
+      % 如果是正式报告 (开关为假)，则显示 Logo
+      % 我们先检查用户是否真的用 \logo{} 命令提供了图片
+      \begin{center}
+        \includegraphics[width=0.4\linewidth]{\templatedir figures/浙江大学}
+      \end{center}
+    \fi
+    {\fontsize{36pt}{6pt}\selectfont \fbsong{\@reporttitle}}\\
     \vspace{15.18mm}
     \vspace{17.712mm}
 
@@ -136,6 +197,7 @@
     \end{center}
   \end{center}
   \thispagestyle{plain}
+  \setcounter{page}{0}
   \newpage
 }
 \endinput
