@@ -1,4 +1,4 @@
-\ProvidesClass{Phyport}
+\ProvidesClass{Preport}
 \LoadClass{ctexart}
 \RequirePackage{graphicx, xcolor, tikz}
 \RequirePackage{geometry, titlesec, fancyhdr}
@@ -9,8 +9,42 @@
 \WarningFilter{latexfont}{Some font shapes}
 \WarningFilter{latexfont}{Font shape}
 \RequirePackage{float, siunitx}
-\RequirePackage{booktabs, tabularx, array}
+\RequirePackage{booktabs, tabularx, array, subcaption, hyperref}
+\RequirePackage{currfile}
+\hypersetup{
+    colorlinks=true,
+}
+\RequirePackage{comment}
+\newcommand{\@reporttitle}{}
+\newif\ifpreviewreport
 
+% 声明选项 'yuxi'
+% 当在 \documentclass 中检测到 'yuxi' 时，执行以下所有操作
+\DeclareOption{yuxi}{
+  \renewcommand{\@reporttitle}{物理实验预习报告}
+  \excludecomment{fullreportonly}
+  \previewreporttrue
+}
+
+% 声明选项 'bg'
+% 当在 \documentclass 中检测到 'bg' 时，执行以下所有操作
+\DeclareOption{bg}{
+  \renewcommand{\@reporttitle}{物~理~实~验~报~告}
+  % \includecomment 是 comment 宏包的命令，确保环境生效
+  \includecomment{fullreportonly}
+  \previewreportfalse
+}
+
+% 3. ★★★ 设置默认值并执行选项 ★★★
+% 如果用户没有提供任何选项，则默认执行 'bg' 选项
+\ExecuteOptions{bg}
+
+% 现在，处理用户在 \documentclass[...]{...} 中实际传入的选项
+% 它会覆盖上面的默认设置
+\ProcessOptions\relax
+
+\newcommand{\templatedir}{./}
+\newcommand{\settemplatedir}[1]{\renewcommand{\templatedir}{#1}}
 
 \newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
 \newcolumntype{C}[1]{>{\centering\arraybackslash}p{#1}}
@@ -63,7 +97,7 @@
 %\newcommand\major[1]{\def\@major{#1}}
 %\newcommand\course[1]{\def\@course{#1}}
 \newcommand\exname[1]{\def\@exname{#1}}
-\newcommand\extable[1]{\def\@extable{#1}}
+%\newcommand\extable[1]{\def\@extable{#1}}
 \newcommand\instructor[1]{\def\@instructor{#1}}
 
 \newcommand\class[1]{\def\@class{#1}}
@@ -78,7 +112,7 @@
 
 \newcommand\redate[1]{\def\@redate{#1}}
 \newcommand\resitu[1]{\def\@resitu{#1}}
-
+\newcommand\daypart[1]{\def\@daypart{#1}}
 %\newcommand\college[1]{\def\@college{#1}}
 %\newcommand\lab[1]{\def\@lab{#1}}
 %\newcommand\grades[1]{\def\@grades{#1}}
@@ -86,7 +120,21 @@
 %\newcommand\exptype[1]{\def\@exptype{#1}}
 %\newcommand\partner[1]{\def\@partner{#1}}
 \graphicspath{{figures/}}
-
+\newcommand{\insertnotes}{%
+  % 在插入文件前，先用 \IfFileExists 检查文件是否存在
+  \IfFileExists{\templatedir note.tex}
+  {% 如果文件存在 (TRUE block)
+    \input{\templatedir note} % 执行插入操作
+  }
+  {% 如果文件不存在 (FALSE block)
+    % 在编译日志(.log)和终端中打印一条明确的警告信息
+    \PackageWarning{myphydreport}{
+      Notes file not found! I was looking for it at the exact path: '\templatedir/note'
+    }
+  }%
+}
+\renewcommand{\figurename}{图}
+\renewcommand{\tablename}{表}
 \pagestyle{plain}
 %\lhead{实验名称：\@expname}
 %\chead{姓名：\@name}
@@ -99,25 +147,36 @@
 
 % 封面
 \newcommand{\makecover}{
-  \begin{center}
-    \begin{center}
-      \includegraphics[width=0.4\linewidth]{figures/浙江大学}
-    \end{center}
 
-    {\fontsize{36pt}{6pt}\selectfont \fbsong{物~理~实~验~报~告}}\\
-    \vspace{12.65mm}
-    \vspace{18.45mm}
+    \phantom{\fontsize{42pt}{50.4pt}\selectfont wcnm的LaTeX}
+
+    \begin{center}
+    %   \begin{fullreportonly}
+    %   \begin{center}
+    %   \includegraphics[width=0.4\linewidth]{figures/浙江大学}
+    %   \end{center}
+    % \end{fullreportonly}
+    \ifpreviewreport
+    \else
+      % 如果是正式报告 (开关为假)，则显示 Logo
+      % 我们先检查用户是否真的用 \logo{} 命令提供了图片
+      \begin{center}
+        \includegraphics[width=0.4\linewidth]{\templatedir figures/浙江大学}
+      \end{center}
+    \fi
+    {\fontsize{36pt}{6pt}\selectfont \fbsong{\@reporttitle}}\\
+    \vspace{15.18mm}
+    \vspace{17.712mm}
 
     \Large
     \centering
     \renewcommand\arraystretch{2}
     \begin{tabular}{l@{}l}
       \fbsong{实验名称：} & \underlinetext[69.125mm]{\@exname} \\
-      \fbsong{实验桌号：} & \underlinetext[69.125mm]{\@extable} \\
       \fbsong{指导教师：} & \underlinetext[69.125mm]{\@instructor}
     \end{tabular}
 
-    \vspace{18.45mm}
+    \vspace{19.08mm}
     \large
     \centering
     \renewcommand\arraystretch{2}
@@ -127,22 +186,33 @@
       \fbsong{学号：} & \underlinetext[79.695mm]{\@stuid}
     \end{tabular}
 
-    \vspace{4.83mm}
+    \vspace{8.694mm}
 
     \begin{center}
-      \large{\fbsong{实验日期：}\underlinetext[9.66mm]{\@nyear}\fbsong{年}\underlinetext[9.66mm]{\@nmonth}\fbsong{月}\underlinetext[9.66mm]{\@nday}\fbsong{日}\hspace{7.245mm}\fbsong{星期}\underlinetext[7.245mm]{\@nweekday}\fbsong{上/下午}}\\
-    \textcolor[gray]{0.4}{\small{（此处填实验选课系统内日期）}}\\
+      \large{\fbsong{实验日期：}\underlinetext[9.66mm]{\@nyear}\fbsong{年}\underlinetext[9.66mm]{\@nmonth}\fbsong{月}\underlinetext[9.66mm]{\@nday}\fbsong{日}\hspace{7.245mm}\fbsong{星期}\underlinetext[7.245mm]{\@nweekday}\fbsong{\@daypart 午}}
+
+      \vspace{8.694mm}
+
     \large{浙江大学物理实验教学中心}
     \end{center}
   \end{center}
-
-  \vspace{4.2175mm}
-
-  \begin{flushleft}
-    \textcolor[gray]{0.4}{\normalsize{\fbsong{如有实验补做，补做日期：}}}\@redate \\
-    \textcolor[gray]{0.4}{\normalsize{\fbsong{情况说明：}}}\@resitu
-  \end{flushleft}
   \thispagestyle{plain}
+  \setcounter{page}{0}
   \newpage
 }
 \endinput
+
+% 三线表使用方法
+% \begin{table}[H]
+%   \centering
+%   \caption{}
+%   \begin{tabular}{C{.3\textwidth}C{.3\textwidth}C{.3\textwidth}}
+%   \toprule
+%   读取值  & 测量值  & 计算误差 \\
+%   \midrule
+%   10000$\Omega$  & 10001$\Omega$  & 0.01\%  \\
+%   100$\Omega$    & 100.4$\Omega$  & 0.40\%  \\
+%   100k$\Omega$ & 100.25k$\Omega$ & 0.25\%  \\
+%   \bottomrule
+%   \end{tabular}
+% \end{table}
