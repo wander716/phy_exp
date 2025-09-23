@@ -4,8 +4,6 @@
 
 模板参考了 cc98（【学习天地】大二物理实验报告 LaTeX 模版 <https://www.cc98.org/topic/6284556> 复制本链接到浏览器或者打开【CC98】微信小程序查看~）的模板，进行了一些修改和功能性宏包的添加
 
-物理单位请使用 siunit 宏包，e.g.`$\si{\meter\per\second}$`，`$\si{\degreeCelsius}$`，
-
 ## 资源整理
 
 [Typst 模板](https://www.cc98.org/topic/6286687)
@@ -110,4 +108,18 @@
     \end{subfigure}
 \caption{多量程电流表相关电路}
 \end{figure}
+```
+
+引用：
+
+```tex
+\cref{duoliangchengdianliu}
+```
+
+单位：
+
+```tex
+\SI{10}{mA}
+\si{\meter\per\second}
+\si{\degreeCelsius}
 ```
