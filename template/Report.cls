@@ -1,6 +1,6 @@
 \ProvidesClass{Preport}
 \LoadClass{ctexart}
-\RequirePackage{graphicx, xcolor, tikz}
+\RequirePackage{graphicx, xcolor, tikz, amsmath}
 \RequirePackage{geometry, titlesec, fancyhdr}
 \RequirePackage{listings, cncolours}
 \RequirePackage{indentfirst, enumitem, zhnumber}
@@ -10,7 +10,7 @@
 \WarningFilter{latexfont}{Font shape}
 \RequirePackage{float, siunitx}
 \RequirePackage{booktabs, tabularx, array, subcaption, hyperref}
-\RequirePackage{currfile, cleveref, comment}
+\RequirePackage{currfile, cleveref, comment, multirow}
 \hypersetup{
     colorlinks=true,
 }
