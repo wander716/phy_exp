@@ -1,43 +1,27 @@
-\documentclass{Phyport}
-\usepackage{amsmath, amsthm, amssymb, amsfonts}
-\usepackage{esint}
-\usepackage{nicematrix}
-\usepackage{extarrows}
-\usepackage{graphicx}
-\usepackage{enumitem}
-\usepackage{multirow, booktabs}
-\usepackage{caption}
-\usepackage{float}
-\usepackage[dvipsnames]{xcolor}
-\usepackage[english]{babel}
-\usepackage{bm}
-\usepackage{cite}
-\usepackage{multirow}
-\usepackage{hyperref}
-\hypersetup{
-    colorlinks=true,
+\documentclass[]{../template/Report}%方括号内写yuxi即生成预习报告\documentclass[yuxi]{../template/Report}
+\settemplatedir{../template/}%设置模板路径
+\sisetup{
+    separate-uncertainty = true,
+    per-mode = symbol
 }
-\input{选用宏.tex} %选用宏
+\exname{} %实验名称
+\extable{} %实验桌号
+\instructor{} %指导教师
+\class{} %班级
+\name{} %姓名
+\stuid{} %学号
 
-\exname{光速测量} %实验名称
-\extable{8} %实验桌号
-\instructor{张利} %指导教师
-\class{生医2402} %班级
-\name{姚舜瑜} %姓名
-\stuid{3240100532} %学号
-
-\nyear{2025} %年
-\nmonth{9} %月
-\nday{23} %日
-\nweekday{二} %星期几
+\nyear{} %年
+\nmonth{} %月
+\nday{} %日
+\nweekday{} %星期几，e.g. \nweekday{三}
+\daypart{}%上午/下午
 
 \redate{} %如有实验补做，补做日期
 \resitu{} %情况说明：
-
+\input{选用宏.tex} %选用宏
 \begin{document}
-\setcounter{page}{0}
-\makecover
-
+\maketitle
 
 \section{预习报告（10分）}
 \subsection{实验综述（5分）}
@@ -97,31 +81,38 @@ c = \frac{2(s_2 - s_1)\upsilon }{\Delta t' \upsilon '}
 \subsubsection{实验方法}
 本实验主要器材包括：1、光速测量仪；2、示波器；
 
+实验步骤如下：
 
-\textbf{Step 1.} 开启电源，调节光路，确保发射光能准确地反射回接收器中心，以获得最强的信号。
+\begin{enumerate}
+    \item 开启电源，调节光路，确保发射光能准确地反射回接收器中心，以获得最强的信号。
 
-\textbf{Step 2.} 取第一个六等分点为$S_1$，利用示波器$Track$功能将光标1对齐测量信号幅度峰值。保持光标1位置不变。
+    \item 取第一个六等分点为$S_1$，利用示波器\textbf{Track}功能将光标1对齐测量信号幅度峰值。保持光标1位置不变。
 
-\textbf{Step 3.} 移动反射镜到剩余的六个等分点$S_2$至$S_6$，每移动到一个点，利用示波器$Track$功能将光标2对齐测量信号幅度峰值，记录此时的时间差$\Delta t'$。
+    \item 移动反射镜到剩余的六个等分点$S_2$至$S_6$，每移动到一个点，利用示波器\textbf{Track}功能将光标2对齐测量信号幅度峰值，记录此时的时间差$\Delta t'$。
 
-\textbf{Step 4.} 根据测得的六个时间差$\Delta t'$和对应的光程差$s_2 - s_1$，利用公式\eqref{eq:光速公式}计算出光速$c$的值。
+    \item 根据测得的六个时间差$\Delta t'$和对应的光程差$s_2 - s_1$，利用公式\eqref{eq:光速公式}计算出光速$c$的值。
 
-\textbf{Step 5.} 略微改变$S_1$的位置，重复上述步骤，获取更多数据，计算平均值并估算误差。
+    \item 略微改变$S_1$的位置，重复上述步骤，获取更多数据，计算平均值并估算误差。
 
+\end{enumerate}
 
 
 
 \subsection{实验重点（3分）}
-1. 理解相位法测量光速的基本原理和实验方法。
+\begin{enumerate}
+    \item 理解相位法测量光速的基本原理和实验方法。
 
-2. 学会通过“逐差法”或“累积法”减小测量误差。
+    \item 学会通过“逐差法”或“累积法”减小测量误差。
+\end{enumerate}
 
 \subsection{实验难点（2分）}
-1. 光路调节：精确调节光路，确保发射光能准确地反射回接收器中心，以获得最强的信号。
+\begin{enumerate}
+    \item 光路调节：精确调节光路，确保发射光能准确地反射回接收器中心，以获得最强的信号。
 
-2. 示波器使用：熟练掌握示波器的各项功能，特别是$Track$功能，以便准确测量信号的时间差。
+    \item 示波器使用：熟练掌握示波器的各项功能，特别是\textbf{Track}功能，以便准确测量信号的时间差。
 
-3. 数据处理：合理处理测量数据，计算光速并估算误差。
+    \item 数据处理：合理处理测量数据，计算光速并估算误差。
+\end{enumerate}
 
 \newpage
 
@@ -173,12 +164,12 @@ c = \frac{2(s_2 - s_1)\upsilon }{\Delta t' \upsilon '}
 \subsubsection{平均值法：}计算上述数据的平均值作为光速的估计值。
 计算得：
 \begin{equation}
-    \bar{c} = \frac{1}{12} \sum_{i=1}^{12} c_i = 2.9733 \times 10^8\ \mathrm{m/s}
+    \bar{c} = \frac{1}{12} \sum_{i=1}^{12} c_i = \SI{2.9733e8}{\meter\per\second}
 \end{equation}
 \subsubsection{逐差法：}计算相邻两次测量的光程差和时间差，得到更精确的光速估计值。
 计算得：
 \begin{equation}
-    c = \frac{2(\Delta s_2 - \Delta s_1)\upsilon }{(\Delta t_2 - \Delta t_1) \upsilon '} = \frac{2(12 - 6)\ \mathrm{cm} \times 100\ \mathrm{MHz}}{(184 - 89)\ \mathrm{ns} \times 0.4448\ \mathrm{MHz}} = 3.014\times 10^8\ \mathrm{m/s}
+    c = \frac{2(\Delta s_2 - \Delta s_1)\upsilon }{(\Delta t_2 - \Delta t_1) \upsilon '} = \frac{2 \times (12 - 6)\ \unit{\centi\meter} \times \SI{100}{\mega\hertz}}{ (184 - 89)\ \unit{\nano\second} \times \SI{0.4448}{\mega\hertz}} = \SI{3.014e8}{\meter\per\second}
 \end{equation}
 
 \subsubsection{斜率拟合法：}将光程差 $\Delta s$ 作为横坐标，时间差 $\Delta t$ 作为纵坐标，进行线性拟合，斜率 $k$ 即为 $\frac{\Delta t}{\Delta s}$。
@@ -192,10 +183,10 @@ c = \frac{2(s_2 - s_1)\upsilon }{\Delta t' \upsilon '}
     \label{fig:线性拟合图}
 \end{figure}
 
-得到斜率 $k = 0.0670\ \mathrm{cm/ns}$。
+得到斜率 $k = \SI{0.0670}{\centi\meter\per\nano\second}$。
 计算得：
 \begin{equation}
-    c = 2k \times \frac{\upsilon}{\upsilon'} = 2 \times 0.0670\ \mathrm{cm/ns} \times \frac{100\ \mathrm{MHz}}{0.4448\ \mathrm{MHz}} = 3.015\times 10^8\ \mathrm{m/s}
+    c = 2k \times \frac{\upsilon}{\upsilon'} = 2 \times \SI{0.0670}{\centi\meter\per\nano\second} \times \frac{\SI{100}{\mega\hertz}}{\SI{0.4448}{\mega\hertz}} = \SI{3.015e8}{\meter\per\second}
 \end{equation}
 
 \newpage
@@ -203,23 +194,23 @@ c = \frac{2(s_2 - s_1)\upsilon }{\Delta t' \upsilon '}
 \subsection{误差分析（20分）}
 本实验的主要误差来源包括仪器读数误差、数据处理方法误差以及环境因素影响。下面分别进行分析：
 
-\textbf{1. 仪器读数误差：}
+\subsection{仪器读数误差}
 \begin{itemize}
     \item 距离 $s$ 的测量误差主要来自标尺的最小分度值和人为读数误差。
     \item 时间 $\Delta t$ 的测量误差主要来自示波器的分辨率和光标定位误差。
 \end{itemize}
 
-\textbf{2. 数据处理方法误差：}
+\subsection{数据处理方法误差}
 \begin{itemize}
     \item 采用斜率法和逐差法时，若数据点分布不均或存在系统性偏差，会影响最终结果。
 \end{itemize}
 
-\textbf{3. 环境因素：}
+\subsection{环境因素}
 \begin{itemize}
     \item 光路调整不理想、反射镜未完全对准、环境光干扰等都会影响信号质量。
 \end{itemize}
 
-\textbf{4. A类不确定度分析：}
+\subsection{A类不确定度分析}
 
 A类不确定度主要来源于多次独立测量的统计波动。以光速 $c$ 的多次测量值 $c_i$ 为例，A类不确定度按如下公式计算：
 
@@ -234,12 +225,12 @@ A类不确定度主要来源于多次独立测量的统计波动。以光速 $c$
     u_A = \sqrt{\frac{1}{12 \times 11} \sum_{i=1}^{12} (c_i - 2.9733 \times 10^8)^2}
 \end{equation}
 
-计算得 $u_A \approx 0.053 \times 10^8\ \mathrm{m/s}$。
+计算得 $ u_A \approx \SI{0.053e8}{\meter\per\second}$。
 
 因此，最终结果可表示为：
 
 \begin{equation}
-    c = (2.97 \pm 0.05) \times 10^8\ \mathrm{m/s}
+    c = \SI{2.97(5)e8}{\meter\per\second}
 \end{equation}
 
 最终结果和使用逐差法、斜率拟合法得到的结果也较为吻合，说明数据处理方法合理。
@@ -254,38 +245,43 @@ A类不确定度主要来源于多次独立测量的统计波动。以光速 $c$
 
 \newpage
 \section{思考题（10分）}
-\subsection{思考题1:实验中可能出现波形假位移，如何克服？}
+\subsection{实验中可能出现波形假位移，如何克服？}
 
 实验中可能出现的波形假位移可能是由于环境内原本光线的干扰造成的，或者是光路没有调节精准，导致接收器接收到的光信号不稳定。
 为克服这些问题，可以采取以下措施：
 
-1. 在实验室内尽量减少其他光源的干扰，使用遮光罩或在暗室中进行实验。
+\begin{enumerate}
+    \item 在实验室内尽量减少其他光源的干扰，使用遮光罩或在暗室中进行实验。
 
-2. 在实验前调节光路，确保发射光能准确地反射回接收器中心。
+    \item 在实验前调节光路，确保发射光能准确地反射回接收器中心。
 
-3. 多次测量：通过多次测量取平均值，减小偶然误差的影响。
+    \item 多次测量：通过多次测量取平均值，减小偶然误差的影响。
+\end{enumerate}
 
-\subsection{思考题2：分析影响实验精度的主要因素。}
+\subsection{分析影响实验精度的主要因素。}
 
 影响实验精度主要有以下几个方面：
 
-1. 光标选取误差。在实验中需要让示波器的AX和BX光标都对应波形的同一点，但是由于调节本身的精度限制和人工调节的误差，难免对$\Delta t$的测量产生影响。
+\begin{enumerate}
+    \item 光标选取误差。在实验中需要让示波器的AX和BX光标都对应波形的同一点，但是由于调节本身的精度限制和人工调节的误差，难免对$\Delta t$的测量产生影响。
 
-2. 光程差测量误差。光程差的测量依赖人工读数，一些微小的偏差和读数失误都可能导致测量结果的不准确。
+    \item 光程差测量误差。光程差的测量依赖人工读数，一些微小的偏差和读数失误都可能导致测量结果的不准确。
 
-3. 环境因素。实验环境中的光线干扰等因素都有可能影响实验结果的精度
+    \item 环境因素。实验环境中的光线干扰等因素都有可能影响实验结果的精度
+\end{enumerate}
 
-\subsection{思考题3：描述光速测量的其他实验方法。}
+\subsection{描述光速测量的其他实验方法。}
 
 除了本实验中采用的光调制法测量光速外，还有其他几种有名的光速测量方法：
 
-1. 旋转齿轮法：这是最早的地面光速测量方法之一。通过让光线穿过一个高速旋转的齿轮，光线经过一定距离后反射回来，再次通过齿轮。如果齿轮转速合适，反射回来的光线会被齿轮的齿挡住或通过，从而根据齿轮的转速和光程长度计算出光速。
+\begin{enumerate}
+    \item 旋转齿轮法：这是最早的地面光速测量方法之一。通过让光线穿过一个高速旋转的齿轮，光线经过一定距离后反射回来，再次通过齿轮。如果齿轮转速合适，反射回来的光线会被齿轮的齿挡住或通过，从而根据齿轮的转速和光程长度计算出光速。
 
-2. 旋转镜法：该方法改进了旋转齿轮法，采用高速旋转的多面镜代替齿轮。光线经过旋转镜反射后，经过长距离反射回来，再次被旋转镜反射。通过测量旋转镜的转速和光程，可以精确计算光速。该方法大大提高了测量精度。
+    \item 旋转镜法：该方法改进了旋转齿轮法，采用高速旋转的多面镜代替齿轮。光线经过旋转镜反射后，经过长距离反射回来，再次被旋转镜反射。通过测量旋转镜的转速和光程，可以精确计算光速。该方法大大提高了测量精度。
 
-3. 激光干涉法：利用迈克尔逊干涉仪，通过比较不同路径的光程差，测量干涉条纹的移动，从而精确计算光速。该方法精度极高，常用于现代物理实验室。
+    \item 激光干涉法：利用迈克尔逊干涉仪，通过比较不同路径的光程差，测量干涉条纹的移动，从而精确计算光速。该方法精度极高，常用于现代物理实验室。
 
+\end{enumerate}
 
-\vspace{1cm}
-\input{注意事项}
+\insertnotes
 \end{document}
