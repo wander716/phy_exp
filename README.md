@@ -31,7 +31,7 @@
 \nmonth{} %月
 \nday{} %日
 \nweekday{} %星期几，e.g. \nweekday{三}
-\daypart{}%上午/下午，e.g. \daypart{上}
+\daypart{}%上午/下午
 
 \redate{} %如有实验补做，补做日期
 \resitu{} %情况说明：
