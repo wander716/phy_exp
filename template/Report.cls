@@ -10,10 +10,17 @@
 \WarningFilter{latexfont}{Font shape}
 \RequirePackage{float, siunitx}
 \RequirePackage{booktabs, tabularx, array, subcaption, hyperref}
-\RequirePackage{currfile, cleveref, comment, multirow}
+\RequirePackage{currfile, cleveref, comment, multirow, enumitem}
 \hypersetup{
     colorlinks=true,
 }
+%%%%%%%%%%%%%%%%%%%%%单位格式
+\sisetup{
+    separate-uncertainty = true,
+    per-mode = symbol
+}
+%%%%%%%%%%%%%%%%%%%%%%
+
 
 %%%%%%%%%%%%%%%%%%%%%引用格式
 \crefname{figure}{图}{图}
@@ -273,3 +280,11 @@
   \fi
 }
 \let\maketitle\makecover
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%数学符号
+\renewcommand{\d}{\mathrm{d}}
+\newcommand{\e}{\mathrm{e}}
+\newcommand{\dv}[3][]{%
+  \frac{\d^{#1} #2}{\d #3^{#1}}} %求n阶导数的Leibniz符号, 当n=1时第一个变量不填.
+\newcommand{\pdv}[3][]{%
+  \frac{\pa^{#1} #2}{\pa {#3}^{#1}}}
