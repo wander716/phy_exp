@@ -36,7 +36,7 @@ jobs:
             for file in $(find . -type f -name "*.tex" ! -path "./template/*" ! -name "template.tex"); do
               echo "正在编译: $file"
               # 使用 latexmk 进行高效编译
-              latexmk -pdf -output-directory=compiled_reports -cd "$file"
+              latexmk -xelatex -output-directory=compiled_reports -cd "$file"
             done
             echo "所有文件编译完成。"
 
