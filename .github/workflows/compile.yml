@@ -13,7 +13,7 @@ jobs:
     # 运行环境
     runs-on: ubuntu-latest
     
-    # 授予工作流写入仓库内容的权限，用于创建/更新 Release
+    # 授予工作流写入仓库内容的权限
     permissions:
       contents: write
 
@@ -28,12 +28,9 @@ jobs:
         with:
           scheme: full
           run: |
-            # 步骤 1: 安装 Noto CJK 字体包
             echo "正在安装中文字体..."
-            apk update
-            apk add --no-cache font-noto-cjk
+            apk update && apk add --no-cache font-noto-cjk
             
-            # 步骤 2: 替换 Windows 字体名称
             echo "正在替换 LaTeX 源文件及模板中的字体名称..."
             find . -type f \( -name "*.tex" -o -name "*.cls" \) -exec sed -i 's/SimSun/Noto Serif CJK SC/g' {} +
             find . -type f \( -name "*.tex" -o -name "*.cls" \) -exec sed -i 's/SimHei/Noto Sans CJK SC/g' {} +
@@ -41,45 +38,37 @@ jobs:
             find . -type f \( -name "*.tex" -o -name "*.cls" \) -exec sed -i 's/FangSong/Noto Serif CJK SC/g' {} +
             echo "字体名称替换完成。"
 
-            # 步骤 3: 编译所有符合条件的 .tex 文件，并收集 PDF
             echo "开始编译并收集PDF..."
-            # 在根目录创建统一的输出文件夹
             mkdir -p compiled_reports
-            
-            # 查找所有需要编译的 .tex 文件，并逐个处理
             find . -type f -name "*.tex" ! -path "./template/*" ! -path "./大学物理实验-实验报告/*" ! -name "template.tex" | while read -r file; do
               echo "-----------------------------------------------------"
               echo ">>> 正在处理文件: $file"
+              DIR=$(dirname "$file")
+              BASENAME=$(basename "$file" .tex)
               
-              # --- 这是解决相对路径问题的核心逻辑 ---
-              # 1. 使用 latexmk 的 -cd 参数，它会自动切换到文件所在的目录进行编译。
-              #    这样，文件内部所有的相对路径 (如 ../template/figures/...) 都能被正确解析。
-              #    编译成功后，PDF 文件会生成在与 .tex 源文件相同的目录下。
-              if latexmk -xelatex -cd "$file"; then
+              # --- 核心修改在这里 ---
+              # 使用 -jobname 参数明确指定输出文件的基础名称 (例如 "非平衡电桥")
+              # 这可以避免 latexmk 自动推断错误，生成 default.pdf 或 2.pdf 等非预期文件名
+              if latexmk -xelatex -cd -jobname="$BASENAME" "$file"; then
                 echo "    编译成功: $file"
-                
-                # 2. 编译成功后，将生成的 PDF 文件移动到根目录的 compiled_reports 文件夹中。
-                DIR=$(dirname "$file")
-                BASENAME=$(basename "$file" .tex)
                 echo "    正在移动 PDF: $DIR/$BASENAME.pdf"
                 mv "$DIR/$BASENAME.pdf" compiled_reports/
               else
-                # 3. 如果编译失败，输出错误信息并让整个工作流失败。
                 echo "::error::文件编译失败: $file. 请检查日志获取详细信息。"
                 exit 1
               fi
             done
-            
             echo "所有文件处理完成。"
 
-      # 第 3 步：检查最终的 PDF 文件集合 (用于调试)
-      - name: 检查 PDF 文件路径 (Verify PDF files path)
+      # 第 3 步：删除旧的 Release 和标签以避免更新冲突
+      - name: 删除旧的 Release 和标签 (Delete Old Release and Tag)
         run: |
-          echo "检查 'compiled_reports' 文件夹内容:"
-          ls -R compiled_reports
+          gh release delete latest-reports --yes --cleanup-tag || echo "Release 'latest-reports' not found, proceeding."
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      # 第 4 步：创建或更新 Release 并上传 PDF
-      - name: 创建/更新 Release 并上传PDF (Create/Update Release and Upload PDFs)
+      # 第 4 步：创建新的 Release 并上传 PDF
+      - name: 创建新的 Release 并上传PDF (Create New Release and Upload PDFs)
         uses: softprops/action-gh-release@v2
         with:
           tag_name: latest-reports
@@ -88,5 +77,4 @@ jobs:
             自动编译生成的最新实验报告PDF。
             此 Release 由 GitHub Action 自动更新。
           prerelease: true
-          # 现在这里可以稳定地找到所有被移动过来的 PDF 文件
           files: compiled_reports/*.pdf
