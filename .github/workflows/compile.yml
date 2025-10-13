@@ -1,11 +1,11 @@
 # 工作流名称
-name: 根据标签发布报告 (Release PDFs on Tag)
+name: 编译报告并发布到 Release (Compile and Release PDFs)
 
-# 触发条件：当一个以 'v' 开头的标签被创建时
+# 触发条件：推送到 master 分支时
 on:
   push:
-    tags:
-      - 'v*'
+    branches:
+      - master
 
 # 工作流任务
 jobs:
@@ -20,76 +20,49 @@ jobs:
     steps:
       # 第 1 步：检出仓库代码
       - name: 检出仓库代码 (Checkout repository)
-        uses: actions/checkout@v4
+        uses: actions/checkout@v2
 
-      # 第 2 步：编译所有 PDF 文件
+      # 第 2 步：安装字体、替换字体名并编译所有文件
       - name: 安装字体、替换并编译 (Install, Replace & Compile)
         uses: xu-cheng/texlive-action@v2
         with:
           scheme: full
           run: |
-            echo ">>> 正在运行最终解决方案 v7.1 (纯官方GH命令行工具 + 详细日志) <<<"
-            
-            echo "正在安装中文字体..."
             apk update && apk add --no-cache font-noto-cjk
-            
-            echo "正在替换 LaTeX 源文件及模板中的字体名称..."
             find . -type f \( -name "*.tex" -o -name "*.cls" \) -exec sed -i 's/SimSun/Noto Serif CJK SC/g' {} +
             find . -type f \( -name "*.tex" -o -name "*.cls" \) -exec sed -i 's/SimHei/Noto Sans CJK SC/g' {} +
             find . -type f \( -name "*.tex" -o -name "*.cls" \) -exec sed -i 's/KaiTi/Noto Serif CJK SC/g' {} +
             find . -type f \( -name "*.tex" -o -name "*.cls" \) -exec sed -i 's/FangSong/Noto Serif CJK SC/g' {} +
-            echo "字体名称替换完成。"
-
-            echo "开始编译并收集PDF..."
             mkdir -p compiled_reports
-            find . -type f -name "*.tex" ! -path "./template/*" ! -path "./大学物理实验-实验报告/*" ! -name "template.tex" | while read -r file; do
-              echo ">>> 正在处理文件: $file"
-              DIR=$(dirname "$file")
-              BASENAME=$(basename "$file" .tex)
-              
-              if latexmk -xelatex -cd -jobname="$BASENAME" "$file"; then
-                echo "    编译成功: $file"
-                mv "$DIR/$BASENAME.pdf" compiled_reports/
-              else
-                echo "::error::文件编译失败: $file. 请检查日志获取详细信息。"
-                exit 1
-              fi
+            for file in $(find . -type f -name "*.tex" ! -path "./template/*" ! -path "./大学物理实验-实验报告/*" ! -name "template.tex"); do
+              echo "正在编译: $file"
+              latexmk -xelatex -output-directory=compiled_reports -cd "$file"
             done
-            echo "所有文件处理完成。"
 
-      # 第 3 步：使用 GitHub 官方命令行工具创建 Release 并上传所有文件
-      - name: 使用 GH CLI 创建 Release 并上传附件 (Create Release & Upload Assets via GH CLI)
-        env:
-          # 认证 GH CLI 所需的 Token
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      # 第 3 步：重命名PDF文件以避免API上传错误
+      - name: 重命名PDF文件 (Rename PDF files for release)
         run: |
-          # --- 日志输出 ---
-          echo "=================================================="
-          echo "准备发布 Release..."
-          echo "使用的标签 (Tag): ${{ github.ref_name }}"
-          echo "=================================================="
-          
-          # 防御性措施：先尝试删除旧的 Release
-          echo ""
-          echo "[1/3] 正在尝试删除可能存在的旧 Release 和 Tag..."
-          if gh release delete ${{ github.ref_name }} --yes --cleanup-tag; then
-            echo "    > 成功删除旧的 Release 和 Tag: ${{ github.ref_name }}"
-          else
-            echo "    > 未找到旧的 Release，或删除失败（这是正常情况），继续执行创建。"
-          fi
-          
-          # 准备上传的文件列表日志
-          echo ""
-          echo "[2/3] 准备上传以下文件到 Release:"
-          ls -R compiled_reports
-          
-          # 创建并上传
-          echo ""
-          echo "[3/3] 正在创建新的 Release 并上传所有 PDF 文件..."
-          gh release create ${{ github.ref_name }} compiled_reports/*.pdf \
-            --title "实验报告 ${{ github.ref_name }}" \
-            --notes "自动编译生成的实验报告PDF。由 GitHub Action (官方CLI) 创建。"
-          
-          echo ""
-          echo "✅ Release 发布流程执行完毕。"
-          echo "=================================================="
+          cd compiled_reports
+          i=1
+          for file in *.pdf; do
+            new_name=$(echo "$file" | sed 's/.pdf//g')
+            mv "$file" "report-$i-$new_name.pdf"
+            i=$((i+1))
+          done
+          cd ..
+
+      # 第 4 步：创建新的、唯一的 Release 并上传 PDF
+      - name: 创建新的 Release (Create New Release)
+        uses: softprops/action-gh-release@v2
+        with:
+          # 关键修改：为每次运行创建唯一的标签名，例如 build-21, build-22
+          tag_name: build-${{ github.run_number }}
+          # 关键修改：让 Release 的标题更具信息性
+          name: Build #${{ github.run_number }}
+          body: |
+            由最新的推送自动编译生成的实验报告。
+            Commit: `${{ github.sha }}`
+          # 关键修改：将这个新版本标记为 "Latest"
+          make_latest: true
+          prerelease: true
+          files: compiled_reports/report-*.pdf
