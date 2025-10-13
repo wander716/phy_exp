@@ -46,9 +46,6 @@ jobs:
               DIR=$(dirname "$file")
               BASENAME=$(basename "$file" .tex)
               
-              # --- 核心修改在这里 ---
-              # 使用 -jobname 参数明确指定输出文件的基础名称 (例如 "非平衡电桥")
-              # 这可以避免 latexmk 自动推断错误，生成 default.pdf 或 2.pdf 等非预期文件名
               if latexmk -xelatex -cd -jobname="$BASENAME" "$file"; then
                 echo "    编译成功: $file"
                 echo "    正在移动 PDF: $DIR/$BASENAME.pdf"
@@ -60,21 +57,23 @@ jobs:
             done
             echo "所有文件处理完成。"
 
-      # 第 3 步：删除旧的 Release 和标签以避免更新冲突
-      - name: 删除旧的 Release 和标签 (Delete Old Release and Tag)
-        run: |
-          gh release delete latest-reports --yes --cleanup-tag || echo "Release 'latest-reports' not found, proceeding."
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      # 第 4 步：创建新的 Release 并上传 PDF
-      - name: 创建新的 Release 并上传PDF (Create New Release and Upload PDFs)
-        uses: softprops/action-gh-release@v2
+      # 第 3 步【核心修改】：使用更稳健的 Action 创建 Release
+      - name: 创建或更新 Release (Create or Update Release)
+        uses: ncipollo/release-action@v1
         with:
-          tag_name: latest-reports
+          # 要上传的文件路径，支持通配符
+          artifacts: "compiled_reports/*.pdf"
+          # GitHub 会自动提供这个 token，无需手动设置
+          token: ${{ secrets.GITHUB_TOKEN }}
+          # 允许 action 更新已存在的 release
+          allowUpdates: true
+          # 每次都使用同一个 tag name
+          tag: latest-reports
+          # Release 的名称
           name: 最新实验报告 (Latest Reports)
+          # Release 的描述
           body: |
             自动编译生成的最新实验报告PDF。
             此 Release 由 GitHub Action 自动更新。
+          # 标记为预发布
           prerelease: true
-          files: compiled_reports/*.pdf
