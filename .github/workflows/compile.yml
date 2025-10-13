@@ -41,10 +41,11 @@ jobs:
             find . -type f \( -name "*.tex" -o -name "*.cls" \) -exec sed -i 's/FangSong/Noto Serif CJK SC/g' {} +
             echo "字体名称替换完成。"
 
-            # 步骤 3: 使用 find 和 for 循环来编译所有非 template 的 .tex 文件
+            # 步骤 3: 使用 find 和 for 循环来编译所有符合条件的 .tex 文件
             echo "开始编译..."
             mkdir -p compiled_reports
-            for file in $(find . -type f -name "*.tex" ! -path "./template/*" ! -name "template.tex"); do
+            # 关键修改：在 find 命令中增加了对 '大学物理实验-实验报告' 目录的排除
+            for file in $(find . -type f -name "*.tex" ! -path "./template/*" ! -path "./大学物理实验-实验报告/*" ! -name "template.tex"); do
               echo "正在编译: $file"
               latexmk -xelatex -output-directory=compiled_reports -cd "$file"
             done
