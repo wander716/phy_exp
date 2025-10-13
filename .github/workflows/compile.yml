@@ -19,7 +19,6 @@ jobs:
 
     steps:
       # 第 1 步：检出仓库代码
-      # 这一步会自动检出触发工作流的那个标签所指向的代码版本
       - name: 检出仓库代码 (Checkout repository)
         uses: actions/checkout@v4
 
@@ -29,7 +28,7 @@ jobs:
         with:
           scheme: full
           run: |
-            echo ">>> 正在运行标签触发的工作流 v4.0 (最终版) <<<"
+            echo ">>> 正在运行最终解决方案 v6.0 (softprops + 先删除后创建) <<<"
             
             echo "正在安装中文字体..."
             apk update && apk add --no-cache font-noto-cjk
@@ -58,17 +57,25 @@ jobs:
             done
             echo "所有文件处理完成。"
 
-      # 第 3 步：根据触发的标签创建 Release
-      - name: 创建 Release (Create Release)
-        uses: ncipollo/release-action@v1
+      # 第 3 步【核心策略】：强制删除可能存在的旧 Release
+      # 确保 softprops/action-gh-release 每次都是在“创建”新的 Release
+      - name: 强制删除旧的 Release (Force Delete Old Release)
+        run: |
+          gh release delete ${{ github.ref_name }} --yes --cleanup-tag || echo "Release not found, proceeding to create."
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # 第 4 步：使用 softprops/action-gh-release 创建一个全新的 Release
+      - name: 创建新的 Release (Create New Release)
+        uses: softprops/action-gh-release@v2
         with:
-          artifacts: "compiled_reports/*.pdf"
-          token: ${{ secrets.GITHUB_TOKEN }}
-          # 关键修改：使用触发工作流的标签名作为 Release 的标签
-          # ${{ github.ref_name }} 会自动获取到你推送的标签名 (例如 'v1.0')
-          tag: ${{ github.ref_name }}
-          # Release 的标题也可以动态生成
+          # 要上传的文件
+          files: compiled_reports/*.pdf
+          # 动态获取触发工作流的标签名
+          tag_name: ${{ github.ref_name }}
+          # Release 的标题
           name: "实验报告 ${{ github.ref_name }}"
+          # Release 的描述
           body: |
             自动编译生成的实验报告PDF。
             Release from tag: ${{ github.ref_name }}
