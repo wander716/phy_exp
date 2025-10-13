@@ -117,26 +117,44 @@ jobs:
           echo "ZIP文件已创建: $zip_name"
           ls -lh "$zip_name"
 
-      # 第 5 步：创建 Release 并上传ZIP文件
+      # 第 5 步：生成Release正文
+      - name: 生成Release正文
+        run: |
+          echo "--- 生成Release正文 ---"
+          cat > release_body.md << EOF
+          # 实验报告自动编译版本
+
+          **构建信息:**
+          - Commit: \`${{ github.sha }}\`
+          - 触发时间: ${{ github.event.head_commit.timestamp }}
+          - 运行ID: ${{ github.run_id }}
+
+          **包含的报告:"
+          EOF
+          
+          cd compiled_reports
+          for pdf in *.pdf; do
+            echo "- $pdf" >> ../release_body.md
+          done
+          cd ..
+          
+          cat >> release_body.md << EOF
+
+          **下载说明:**
+          - 点击下方的ZIP文件下载所有报告
+          - 解压后即可查看所有PDF文件
+          EOF
+          
+          echo "Release正文已生成:"
+          cat release_body.md
+
+      # 第 6 步：创建 Release 并上传ZIP文件
       - name: 创建 Release 并上传ZIP
         uses: softprops/action-gh-release@v2
         with:
           tag_name: reports-${{ github.run_id }}-${{ github.run_number }}
-          name: 实验报告合集 ${{ github.run_number }}
-          body: |
-            # 实验报告自动编译版本
-
-            **构建信息:**
-            - Commit: `${{ github.sha }}`
-            - 触发时间: ${{ github.event.head_commit.timestamp }}
-            - 运行ID: ${{ github.run_id }}
-
-            **包含的报告:**
-            $(cd compiled_reports && for pdf in *.pdf; do echo "- $pdf"; done)
-
-            **下载说明:**
-            - 点击下方的ZIP文件下载所有报告
-            - 解压后即可查看所有PDF文件
+          name: 实验报告合集
+          body_path: release_body.md
           draft: false
           make_latest: true
           prerelease: false
