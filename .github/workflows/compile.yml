@@ -18,43 +18,38 @@ jobs:
       contents: write
 
     steps:
-      # 第一步：检出仓库代码
+      # 第 1 步：检出仓库代码
       - name: 检出仓库代码 (Checkout repository)
         uses: actions/checkout@v4
 
-      # 第二步：安装完整的 TeX Live 环境
-      - name: 安装 TeX Live (Set up TeX Live)
+      # 第 2 步：安装 TeX Live 环境并直接在其中运行编译脚本
+      # 这是关键的修改：将编译命令合并到此步骤中
+      - name: 安装并使用 TeX Live 编译 (Setup TeX Live & Compile)
         uses: xu-cheng/texlive-action@v2
         with:
+          # scheme: full 确保所有宏包（尤其是中文支持）都可用
           scheme: full
+          # 使用 run 参数，让下面的脚本在已安装 TeX Live 的环境中执行
+          run: |
+            echo "开始在 TeX Live 环境中编译..."
+            mkdir -p compiled_reports
+            for file in $(find . -type f -name "*.tex" ! -path "./template/*" ! -name "template.tex"); do
+              echo "正在编译: $file"
+              # 使用 latexmk 进行高效编译
+              latexmk -pdf -output-directory=compiled_reports -cd "$file"
+            done
+            echo "所有文件编译完成。"
 
-      # 第三步：编译所有符合条件的 .tex 文件
-      - name: 编译 LaTeX 文件 (Compile LaTeX files)
-        run: |
-          # 创建一个目录存放编译好的 PDF
-          mkdir -p compiled_reports
-          # 查找并编译所有非 template 的 .tex 文件
-          for file in $(find . -type f -name "*.tex" ! -path "./template/*" ! -name "template.tex"); do
-            echo "正在编译: $file"
-            # 使用 latexmk 进行高效编译，并将输出文件放入 compiled_reports 目录
-            # -output-directory=... 参数可以很好地管理输出文件
-            latexmk -pdf -output-directory=compiled_reports -cd "$file"
-          done
-
-      # 第四步：创建或更新 Release 并上传 PDF
-      # 使用社区广受好评的 release-action
+      # 第 3 步：创建或更新 Release 并上传 PDF
+      # 这一步不需要改变，它会在上一步成功后执行
       - name: 创建/更新 Release 并上传PDF (Create/Update Release and Upload PDFs)
         uses: softprops/action-gh-release@v2
         with:
-          # 使用一个固定的标签名，这样每次运行都会更新同一个 Release
           tag_name: latest-reports
-          # Release 的标题
           name: 最新实验报告 (Latest Reports)
-          # Release 的描述内容
           body: |
             自动编译生成的最新实验报告PDF。
             此 Release 由 GitHub Action 自动更新。
-          # 标记为预发布，以区别于正式的版本发布
           prerelease: true
-          # 指定要上传的文件，即 compiled_reports 目录下的所有 PDF
           files: compiled_reports/*.pdf
+
