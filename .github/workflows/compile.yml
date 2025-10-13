@@ -20,30 +20,35 @@ jobs:
     steps:
       # 第 1 步：检出仓库代码
       - name: 检出仓库代码 (Checkout repository)
-        uses: actions/checkout@v2 # 使用 v2 或更高版本
+        uses: actions/checkout@v2
 
-      # 第 2 步：使用优化后的 Action 编译 LaTeX
-      - name: 编译 LaTeX 文档 (Compile LaTeX document)
-        uses: HermitSun/latex-action@v3
+      # 第 2 步：安装字体、替换字体名并编译所有文件
+      - name: 安装字体、替换并编译 (Install, Replace & Compile)
+        uses: xu-cheng/texlive-action@v2
         with:
-          # 使用 glob 模式自动查找所有 .tex 文件，并排除 template 目录下的
-          root_file: |
-            *.tex
-            */*.tex
-            !template/*.tex
-          glob_root_file: true
-          
-          # 直接指定使用 XeLaTeX 编译器
-          latexmk_use_xelatex: true
-          
-          # 使用专门的输入来安装 Noto CJK 字体包
-          extra_system_packages: "font-noto-cjk"
-          
-          # 在编译前执行脚本，用 sed 替换字体名称，这是最可靠的方法
-          pre_compile: |
-            echo "正在替换 LaTeX 源文件中的字体名称..."
-            find . -type f -name "*.tex" -exec sed -i 's/SimSun/Noto Serif CJK SC/g' {} +
-            find . -type f -name "*.tex" -exec sed -i 's/SimHei/Noto Sans CJK SC/g' {} +
+          scheme: full
+          run: |
+            # 步骤 1: 使用 apk 安装 Noto CJK 字体包
+            echo "正在安装中文字体..."
+            apk update
+            apk add --no-cache font-noto-cjk
+            
+            # 步骤 2: 在所有 .tex 和 .cls 文件中替换所有 Windows 字体名称
+            echo "正在替换 LaTeX 源文件及模板中的字体名称..."
+            find . -type f \( -name "*.tex" -o -name "*.cls" \) -exec sed -i 's/SimSun/Noto Serif CJK SC/g' {} +
+            find . -type f \( -name "*.tex" -o -name "*.cls" \) -exec sed -i 's/SimHei/Noto Sans CJK SC/g' {} +
+            find . -type f \( -name "*.tex" -o -name "*.cls" \) -exec sed -i 's/KaiTi/Noto Serif CJK SC/g' {} +
+            find . -type f \( -name "*.tex" -o -name "*.cls" \) -exec sed -i 's/FangSong/Noto Serif CJK SC/g' {} +
+            echo "字体名称替换完成。"
+
+            # 步骤 3: 使用 find 和 for 循环来编译所有非 template 的 .tex 文件
+            echo "开始编译..."
+            mkdir -p compiled_reports
+            for file in $(find . -type f -name "*.tex" ! -path "./template/*" ! -name "template.tex"); do
+              echo "正在编译: $file"
+              latexmk -xelatex -output-directory=compiled_reports -cd "$file"
+            done
+            echo "所有文件编译完成。"
 
       # 第 3 步：创建或更新 Release 并上传 PDF
       - name: 创建/更新 Release 并上传PDF (Create/Update Release and Upload PDFs)
@@ -55,7 +60,4 @@ jobs:
             自动编译生成的最新实验报告PDF。
             此 Release 由 GitHub Action 自动更新。
           prerelease: true
-          # 使用通配符上传所有生成的 PDF 文件
-          files: |
-            *.pdf
-            */*.pdf
+          files: compiled_reports/*.pdf
