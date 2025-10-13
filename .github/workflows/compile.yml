@@ -1,7 +1,7 @@
 # 工作流名称
-name: 编译报告并发布到 Release (Compile and Release PDFs)
+name: 编译、收集并发布PDF报告 (最终版)
 
-# 触发条件：推送到 master 分支时
+# 触发条件
 on:
   push:
     branches:
@@ -9,54 +9,76 @@ on:
 
 # 工作流任务
 jobs:
-  build_and_release:
-    # 运行环境
+  build_collect_and_release:
     runs-on: ubuntu-latest
-    
-    # 授予工作流写入仓库内容的权限
     permissions:
       contents: write
 
     steps:
       # 第 1 步：检出仓库代码
-      - name: 检出仓库代码 (Checkout repository)
-        uses: actions/checkout@v2
+      - name: 检出仓库代码
+        uses: actions/checkout@v4
 
-      # 第 2 步：安装字体、替换字体名并编译所有文件
-      - name: 安装字体、替换并编译 (Install, Replace & Compile)
+      # 第 2 步：编译所有报告 (使用 jobname 确保命名正确)
+      - name: 编译所有LaTeX报告
         uses: xu-cheng/texlive-action@v2
         with:
           scheme: full
           run: |
+            # 准备工作：安装字体、替换模板中的字体名
             apk update && apk add --no-cache font-noto-cjk
             find . -type f \( -name "*.tex" -o -name "*.cls" \) -exec sed -i 's/SimSun/Noto Serif CJK SC/g' {} +
             find . -type f \( -name "*.tex" -o -name "*.cls" \) -exec sed -i 's/SimHei/Noto Sans CJK SC/g' {} +
             find . -type f \( -name "*.tex" -o -name "*.cls" \) -exec sed -i 's/KaiTi/Noto Serif CJK SC/g' {} +
             find . -type f \( -name "*.tex" -o -name "*.cls" \) -exec sed -i 's/FangSong/Noto Serif CJK SC/g' {} +
-            mkdir -p compiled_reports
+
+            # 编译循环：对每个文件进行编译
             for file in $(find . -type f -name "*.tex" ! -path "./template/*" ! -path "./大学物理实验-实验报告/*" ! -name "template.tex"); do
-              echo "正在编译: $file"
-              latexmk -xelatex -output-directory=compiled_reports -cd "$file"
+              echo "--- 开始编译文件: $file ---"
+              
+              # 关键逻辑：提取文件所在的目录名作为 jobname
+              dir=$(dirname "$file")
+              job_name=$(basename "$dir")
+              
+              # 关键命令：使用 -jobname 参数来确保输出的PDF文件名是目录名
+              latexmk -xelatex -jobname="$job_name" -cd "$file"
+              
+              # 关键调试：检查以 jobname 命名的 PDF 是否成功生成
+              pdf_path="$dir/$job_name.pdf"
+              log_path="$dir/$job_name.log"
+
+              if [ ! -f "$pdf_path" ]; then
+                echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+                echo "!! 错误: 编译失败，'${file}' 未能生成 PDF 文件: '$pdf_path'"
+                echo "!! 下面是来自 '$log_path' 的详细错误日志 (最后100行):"
+                echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+                tail -n 100 "$log_path"
+                exit 1
+              else
+                echo "--- 成功生成: $pdf_path ---"
+              fi
             done
 
-      # 第 3 步 (关键修改): 在 Release 前详细检查编译产物
-      - name: 检查编译产物目录 (Check Compiled Reports Directory)
+      # 第 3 步: 收集所有PDF到 'final_reports' 文件夹
+      - name: 收集所有PDF到 'final_reports' 文件夹
         run: |
-          echo "--- 调试输出：检查 compiled_reports 目录内容 ---"
-          if [ -d "compiled_reports" ]; then
-            echo "'compiled_reports' 目录存在。"
-            echo "目录内容如下:"
-            # -l 参数可以显示文件大小等详细信息，方便判断文件是否为空
-            ls -l compiled_reports/
-          else
-            echo "错误: 'compiled_reports' 目录不存在！编译可能已失败。"
-            # exit 1 会让整个工作流失败，方便快速定位问题
-            exit 1
-          fi
-          echo "-------------------------------------------------"
+          mkdir -p final_reports
+          find . -type f -name "*.pdf" ! -path "./final_reports/*" ! -path "./template/*" ! -path "./大学物理实验-实验报告/*" -exec mv {} final_reports/ \;
 
-      # 第 4 步：创建新的 Release 并上传原始 PDF
-      - name: 创建新的 Release 并上传 PDF (Create New Release and Upload PDFs)
+      # 第 4 步: 检查最终的文件夹内容
+      - name: 检查 'final_reports' 文件夹并列出内容
+        run: |
+          echo "--- 正在检查 'final_reports' 目录内容，准备上传 ---"
+          if [ -z "$(ls -A final_reports)" ]; then
+            echo "错误: 'final_reports' 目录是空的！没有PDF被成功收集。"
+            exit 1
+          else
+            echo "'final_reports' 目录内容如下:"
+            ls -l final_reports/
+          fi
+
+      # 第 5 步：创建 Release 并上传
+      - name: 创建新的 Release 并上传PDF
         uses: softprops/action-gh-release@v2
         with:
           tag_name: build-${{ github.run_number }}
@@ -65,5 +87,5 @@ jobs:
             由最新的推送自动编译生成的实验报告。
             Commit: `${{ github.sha }}`
           make_latest: true
-          prereslease: true
-          files: compiled_reports/*.pdf
+          prerelease: true
+          files: final_reports/*.pdf
