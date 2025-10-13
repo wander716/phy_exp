@@ -1,11 +1,11 @@
 # 工作流名称
 name: 根据标签发布报告 (Release PDFs on Tag)
 
-# 触发条件：当一个以 'v' 开头的标签被创建时 (例如 v1.0, v2.0-reports)
+# 触发条件：当一个以 'v' 开头的标签被创建时
 on:
   push:
     tags:
-      - 'v*' # 使用 'v*' 通配符匹配所有以 v 开头的标签
+      - 'v*'
 
 # 工作流任务
 jobs:
@@ -22,13 +22,13 @@ jobs:
       - name: 检出仓库代码 (Checkout repository)
         uses: actions/checkout@v4
 
-      # 第 2 步：安装字体、替换字体名并编译所有文件
+      # 第 2 步：编译所有 PDF 文件
       - name: 安装字体、替换并编译 (Install, Replace & Compile)
         uses: xu-cheng/texlive-action@v2
         with:
           scheme: full
           run: |
-            echo ">>> 正在运行最终解决方案 v6.0 (softprops + 先删除后创建) <<<"
+            echo ">>> 正在运行最终解决方案 v7.1 (纯官方GH命令行工具 + 详细日志) <<<"
             
             echo "正在安装中文字体..."
             apk update && apk add --no-cache font-noto-cjk
@@ -57,25 +57,39 @@ jobs:
             done
             echo "所有文件处理完成。"
 
-      # 第 3 步【核心策略】：强制删除可能存在的旧 Release
-      # 确保 softprops/action-gh-release 每次都是在“创建”新的 Release
-      - name: 强制删除旧的 Release (Force Delete Old Release)
-        run: |
-          gh release delete ${{ github.ref_name }} --yes --cleanup-tag || echo "Release not found, proceeding to create."
+      # 第 3 步：使用 GitHub 官方命令行工具创建 Release 并上传所有文件
+      - name: 使用 GH CLI 创建 Release 并上传附件 (Create Release & Upload Assets via GH CLI)
         env:
+          # 认证 GH CLI 所需的 Token
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      # 第 4 步：使用 softprops/action-gh-release 创建一个全新的 Release
-      - name: 创建新的 Release (Create New Release)
-        uses: softprops/action-gh-release@v2
-        with:
-          # 要上传的文件
-          files: compiled_reports/*.pdf
-          # 动态获取触发工作流的标签名
-          tag_name: ${{ github.ref_name }}
-          # Release 的标题
-          name: "实验报告 ${{ github.ref_name }}"
-          # Release 的描述
-          body: |
-            自动编译生成的实验报告PDF。
-            Release from tag: ${{ github.ref_name }}
+        run: |
+          # --- 日志输出 ---
+          echo "=================================================="
+          echo "准备发布 Release..."
+          echo "使用的标签 (Tag): ${{ github.ref_name }}"
+          echo "=================================================="
+          
+          # 防御性措施：先尝试删除旧的 Release
+          echo ""
+          echo "[1/3] 正在尝试删除可能存在的旧 Release 和 Tag..."
+          if gh release delete ${{ github.ref_name }} --yes --cleanup-tag; then
+            echo "    > 成功删除旧的 Release 和 Tag: ${{ github.ref_name }}"
+          else
+            echo "    > 未找到旧的 Release，或删除失败（这是正常情况），继续执行创建。"
+          fi
+          
+          # 准备上传的文件列表日志
+          echo ""
+          echo "[2/3] 准备上传以下文件到 Release:"
+          ls -R compiled_reports
+          
+          # 创建并上传
+          echo ""
+          echo "[3/3] 正在创建新的 Release 并上传所有 PDF 文件..."
+          gh release create ${{ github.ref_name }} compiled_reports/*.pdf \
+            --title "实验报告 ${{ github.ref_name }}" \
+            --notes "自动编译生成的实验报告PDF。由 GitHub Action (官方CLI) 创建。"
+          
+          echo ""
+          echo "✅ Release 发布流程执行完毕。"
+          echo "=================================================="
