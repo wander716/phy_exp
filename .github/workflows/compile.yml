@@ -63,8 +63,8 @@ jobs:
               if [ -f "$base_name.pdf" ]; then
                 echo "--- 成功生成: $base_name.pdf ---"
                 # 使用绝对路径移动文件
-                mv "$base_name.pdf" "$current_dir/compiled_reports/$job_name.pdf"
-                echo "--- 已移动到: $current_dir/compiled_reports/$job_name.pdf ---"
+                mv "$base_name.pdf" "$current_dir/compiled_reports/$base_name.pdf"
+                echo "--- 已移动到: $current_dir/compiled_reports/$base_name.pdf ---"
               else
                 echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
                 echo "!! 警告: 编译失败，未能生成 PDF 文件: $base_name.pdf"
