@@ -22,27 +22,45 @@ jobs:
       - name: 检出仓库代码 (Checkout repository)
         uses: actions/checkout@v4
 
-      # 第 2 步：安装字体、安装 TeX Live 环境并使用 xelatex 编译
-      - name: 安装字体并编译 (Install Fonts & Compile)
+      # 第 2 步：安装字体、创建别名并编译
+      - name: 安装字体、创建别名并编译 (Install Fonts, Create Alias & Compile)
         uses: xu-cheng/texlive-action@v2
         with:
           scheme: full
-          # 使用 run 参数，让下面的脚本在已安装 TeX Live 的环境中执行
+          # run 参数让下面的脚本在已安装 TeX Live 的环境中执行
           run: |
-            # 关键步骤：更新包列表并安装中文字体
+            # 步骤 1: 使用 apk (Alpine Linux 包管理器) 安装字体
             echo "正在安装中文字体..."
-            apt-get update
-            apt-get install -y fonts-wqy-zenhei fonts-noto-cjk
-            
-            # 关键步骤：刷新系统字体缓存，让 XeTeX 能找到新字体
+            apk update
+            apk add --no-cache font-noto-cjk
+
+            # 步骤 2: 创建 Fontconfig 配置文件，为 Windows 字体设置别名 (此部分不变)
+            echo "正在为 SimSun/SimHei 等字体创建别名..."
+            mkdir -p /etc/fonts/local.conf.d/
+            cat <<EOF > /etc/fonts/local.conf.d/99-windows-font-aliases.conf
+            <?xml version="1.0"?>
+            <!DOCTYPE fontconfig SYSTEM "fonts.dtd">
+            <fontconfig>
+                <match target="pattern">
+                    <test qual="any" name="family"><string>SimSun</string></test>
+                    <edit name="family" mode="assign" binding="strong"><string>Noto Serif CJK SC</string></edit>
+                </match>
+                <match target="pattern">
+                    <test qual="any" name="family"><string>SimHei</string></test>
+                    <edit name="family" mode="assign" binding="strong"><string>Noto Sans CJK SC</string></edit>
+                </match>
+            </fontconfig>
+            EOF
+
+            # 步骤 3: 刷新系统字体缓存，让新规则生效 (此部分不变)
             echo "正在刷新字体缓存..."
             fc-cache -f -v
 
-            echo "字体准备就绪，开始在 TeX Live 环境中编译..."
+            # 步骤 4: 开始编译 (此部分不变)
+            echo "字体和别名准备就绪，开始编译..."
             mkdir -p compiled_reports
             for file in $(find . -type f -name "*.tex" ! -path "./template/*" ! -name "template.tex"); do
               echo "正在编译: $file"
-              # 使用 xelatex 编译器
               latexmk -xelatex -output-directory=compiled_reports -cd "$file"
             done
             echo "所有文件编译完成。"
