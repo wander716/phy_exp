@@ -57,23 +57,19 @@ jobs:
             done
             echo "所有文件处理完成。"
 
-      # 第 3 步【核心修改】：使用更稳健的 Action 创建 Release
+            # Step 3: Create or Update Release
       - name: 创建或更新 Release (Create or Update Release)
         uses: ncipollo/release-action@v1
         with:
-          # 要上传的文件路径，支持通配符
           artifacts: "compiled_reports/*.pdf"
-          # GitHub 会自动提供这个 token，无需手动设置
           token: ${{ secrets.GITHUB_TOKEN }}
-          # 允许 action 更新已存在的 release
           allowUpdates: true
-          # 每次都使用同一个 tag name
+          # --- The key addition is here ---
+          # This will delete old PDFs before uploading the new ones.
+          replacesArtifacts: true 
           tag: latest-reports
-          # Release 的名称
           name: 最新实验报告 (Latest Reports)
-          # Release 的描述
           body: |
             自动编译生成的最新实验报告PDF。
             此 Release 由 GitHub Action 自动更新。
-          # 标记为预发布
           prerelease: true
