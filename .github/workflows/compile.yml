@@ -50,6 +50,9 @@ jobs:
               echo "基础文件名: $base_name"
               echo "作业名称: $job_name"
               
+              # 记录当前目录
+              current_dir=$(pwd)
+              
               # 进入目录编译
               cd "$dir"
               
@@ -59,9 +62,9 @@ jobs:
               # 检查PDF是否生成
               if [ -f "$base_name.pdf" ]; then
                 echo "--- 成功生成: $base_name.pdf ---"
-                # 直接移动到目标目录，使用有意义的名称
-                mv "$base_name.pdf" "../../compiled_reports/$job_name.pdf"
-                echo "--- 已移动到: compiled_reports/$job_name.pdf ---"
+                # 使用绝对路径移动文件
+                mv "$base_name.pdf" "$current_dir/compiled_reports/$job_name.pdf"
+                echo "--- 已移动到: $current_dir/compiled_reports/$job_name.pdf ---"
               else
                 echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
                 echo "!! 警告: 编译失败，未能生成 PDF 文件: $base_name.pdf"
@@ -78,7 +81,7 @@ jobs:
               latexmk -c
               
               # 返回根目录
-              cd - > /dev/null
+              cd "$current_dir"
             done
 
       # 第 3 步: 检查编译结果
