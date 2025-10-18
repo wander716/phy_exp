@@ -1,6 +1,7 @@
-\documentclass[yuxi]{../template/Report}%方括号内写yuxi即生成预习报告\documentclass[yuxi]{../template/Report}
+\documentclass[]{../template/Report}%方括号内写yuxi即生成预习报告\documentclass[yuxi]{../template/Report}
 \settemplatedir{../template/}%设置模板路径
-
+\usepackage{pdfpages}
+\crefname{appendix}{附录}{附录}
 \exname{} %实验名称
 \extable{} %实验桌号
 \instructor{} %指导教师
@@ -92,13 +93,13 @@ x_k = k\frac{D}{d}\lambda
 \begin{enumerate}
     \item \textbf{分析衍射图案：}首先要搞清楚，当光线通过不同形状的物体时，产生的衍射花样的明暗分布有什么不同和规律。
     \item \textbf{应用衍射原理进行测量：}要学会并熟练运用光的衍射，去测量一些微小量
-    \item \textbf{了解更复杂的衍射：}最后，还需要了解当光通过二维光栅时，会产生怎样的衍射特征。
+    % \item \textbf{了解更复杂的衍射：}最后，还需要了解当光通过二维光栅时，会产生怎样的衍射特征。
 \end{enumerate}
 \subsection{实验难点（2分）}
 （简述本实验的实现难点，不超过100字。）
 \begin{enumerate}
     \item 实验开始前需要调整光学导轨，确保各光学元件等高
-    \item 读数需要小心，计算$D$的时候，接收屏位置$L_2$并非读数
+    % \item 读数需要小心，计算$D$的时候，接收屏位置$L_2$并非读数
     \item 转动轮毂时为了避免空程差，不能往回传，只能单向转动
     \item 测量的时候不能移动光学仪器的位置
 \end{enumerate}
@@ -108,8 +109,81 @@ x_k = k\frac{D}{d}\lambda
 
 \section{结果与分析（60分）}
 \subsection{数据处理与结果（30分）}
-（列出数据表格、选择适合的数据处理方法、写出测量或计算结果。）
-
+\subsubsection{利用光栅衍射法测量光的波长}
+% Please add the following required packages to your document preamble:
+% \usepackage{graphicx}
+\begin{table}[H]
+\centering
+\caption{利用光栅衍射法测量光的波长数据记录表}
+\label{tab:lambda}
+% \resizebox{\textwidth}{!}{%
+\begin{tabular}{|ll|ll|l|}
+\hline
+\multicolumn{1}{|l|}{序号} & $x_{+1}(\si{\mm})$ & \multicolumn{1}{l|}{$x_{-1}(\si{\mm})$} & $x_{+1} - x_{-1}(\si{\mm})$ & $\lambda(\si{\mm})$                        \\ \hline
+\multicolumn{1}{|l|}{1} & 73.745 & \multicolumn{1}{l|}{31.445} & 42.300 & 631.3 \\ \hline
+\multicolumn{1}{|l|}{2} & 73.151 & \multicolumn{1}{l|}{31.145} & 43.006 & 641.9 \\ \hline
+\multicolumn{1}{|l|}{3} & 73.725 & \multicolumn{1}{l|}{31.127} & 42.598 & 635.8 \\ \hline
+\multicolumn{1}{|l|}{4} & 73.640 & \multicolumn{1}{l|}{31.019} & 42.621 & 636.1 \\ \hline
+\multicolumn{1}{|l|}{5} & 73.720 & \multicolumn{1}{l|}{31.132} & 42.588 & 635.6 \\ \hline
+\multicolumn{1}{|l|}{6} & 73.607 & \multicolumn{1}{l|}{30.901} & 42.706 & 637.4 \\ \hline
+\multicolumn{2}{|c|}{衍射屏位置 \SI{70.00}{\cm}}   & \multicolumn{2}{c|}{接收屏位置 \SI{30.00}{\cm}}                            & \multicolumn{1}{c|}{发射器位置\SI{117.00}{\cm}} \\ \hline
+\end{tabular}%
+% }
+\end{table}
+\[
+\overline{\Delta x} = \overline{x_{+1} - x_{-1}} = \frac{42.300 + 43.006 + \cdots + 42.588 + 42.706}{6} = 42.636 \si{\mm}
+\]
+根据$\pm \lambda = (a + b)\sin \theta$, $\sin \theta \approx \theta \approx \tan \theta = \frac{\Delta x}{2\Delta L}$. 其中$a + b = \SI{0.02}{\mm}$，$\Delta L = \SI{670.0}{\mm}$，得出
+\[
+\lambda = \frac{(a + b)\Delta x}{2\Delta L} = \frac{\SI{0.02}{\mm} \times \SI{42.636}{\mm}}{2 \times \SI{670.0}{\mm}} = \SI{636.4}{\nm}
+\]
+\subsubsection{利用单缝衍射测出狭缝宽度}
+% Please add the following required packages to your document preamble:
+% \usepackage{graphicx}
+\begin{table}[H]
+\centering
+\caption{利用单缝衍射测狭缝宽度数据记录表}
+\label{tab:a}
+% \resizebox{\textwidth}{!}{%
+\begin{tabular}{|ll|ll|l|}
+\hline
+\multicolumn{1}{|l|}{序号} & $x_{+1}(\si{\mm})$ & \multicolumn{1}{l|}{$x_{-1}(\si{\mm})$} & $x_{+1} - x_{-1}(\si{\mm})$ & $a(\si{\micro \meter})$                    \\ \hline
+\multicolumn{1}{|l|}{1} & 60.162 & \multicolumn{1}{l|}{42.915} & 17.247 & 70.6 \\ \hline
+\multicolumn{1}{|l|}{2} & 59.680 & \multicolumn{1}{l|}{43.005} & 16.676 & 73.0 \\ \hline
+\multicolumn{1}{|l|}{3} & 59.460 & \multicolumn{1}{l|}{42.540} & 16.920 & 72.0 \\ \hline
+\multicolumn{1}{|l|}{4} & 59.330 & \multicolumn{1}{l|}{42.330} & 17.000 & 71.6 \\ \hline
+\multicolumn{1}{|l|}{5} & 59.671 & \multicolumn{1}{l|}{42.112} & 17.559 & 69.3 \\ \hline
+\multicolumn{1}{|l|}{6} & 59.955 & \multicolumn{1}{l|}{42.055} & 17.405 & 69.9 \\ \hline
+\multicolumn{2}{|c|}{衍射屏位置 \SI{70.00}{\cm}}   & \multicolumn{2}{c|}{接收屏位置 \SI{30.00}{\cm}}                            & \multicolumn{1}{c|}{发射器位置\SI{117.00}{\cm}} \\ \hline
+\end{tabular}%
+% }
+\end{table}
+由单缝衍射一级亮纹的位置$\sin \theta = \pm 1.43 \frac{\lambda}{a}$，且$\sin \theta \approx \theta \approx \tan \theta = \frac{\Delta x}{2\Delta L}$，其中$\Delta L = \SI{670.0}{\mm}$，得出
+\[
+a = \frac{1.43 \cdot 2L\lambda}{\Delta x}
+\]
+\[
+\overline{\Delta x} = \frac{17.247 + 16.676 + 16.920 + 17.000 + 17.559 + 17.405}{6} = 17.134 \si{\mm}
+\]
+可得
+\[a = \frac{1.43 \cdot 2 \cdot 670.0 \cdot 0.6364}{17.134} = \SI{71.2}{\micro \meter}\]
+\subsubsection{绘制单缝衍射中光强分布}
+从-2级暗纹到+2级暗纹中，每\SI{0.400}{\mm}测量一次光强，输入至\textrm{Origin}中绘制出光强(光电流)随位置坐标$x$变化的函数图像，如\cref{fig:intensity}所示。
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=.7\textwidth]{intensity.pdf}
+    \caption{单缝衍射中光强分布图像}
+    \label{fig:intensity}
+\end{figure}
+因为光强符合
+\[
+I(x) = I_0\left[\frac{\sin \beta}{\beta}\right]^2
+\]
+因此使用函数
+\[
+y = y_0 + A\cdot\left(\frac{\sin(w \cdot (x - x_c))}{w \cdot (x - x_c)}\right)^2
+\]
+进行拟合，其中$y_0$为基准偏移量，$A$为振幅，$w$为宽度调节参数，$x_c$为中心位置偏移量。拟合具体结果见\cref{res}。
 \subsection{误差分析（20分）}
 （运用测量误差、相对误差或不确定度等分析实验结果，写出完整的结果表达式，并分析误差原因。）
 
@@ -118,6 +192,11 @@ x_k = k\frac{D}{d}\lambda
 
 \section{思考题（10分）}
 （解答教材或讲义或老师布置的思考题，请先写题干，再作答。）
+
 \end{fullreportonly}
 \insertnotes
+\clearpage
+\appendix
+\section{拟合的结果}\label{res}
+\includepdf[page=1]{./figures/fit.pdf}
 \end{document}
