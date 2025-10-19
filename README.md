@@ -11,7 +11,7 @@
 
 复制完成之后如有需要请更改`template.tex`中的前两行，以便可以找到模板所在的位置。
 
-如果不方便使用$\LaTeX$, 可以在[release](https://github.com/YuNa-Zju/phy_exp/releases/latest)中下载到最新编译的实验报告。
+如果不方便使用 $\LaTeX$ , 可以在[release](https://github.com/YuNa-Zju/phy_exp/releases/latest)中下载到最新编译的实验报告。
 
 ## 资源整理
 
